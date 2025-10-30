@@ -231,6 +231,16 @@ export class VoiceWidgetUI {
   clearTextInput() { this.elements.textField.value = ''; }
 
   escapeHtml(text) { const div = document.createElement('div'); div.textContent = text; return div.innerHTML; }
+
+  showToast(title, message) {
+    if (!this.elements.toast) return;
+    this.elements.toastTitle.textContent = title;
+    this.elements.toastMessage.textContent = message;
+    this.elements.toast.classList.remove('voice-widget-hidden');
+    setTimeout(() => {
+      this.elements.toast.classList.add('voice-widget-hidden');
+    }, 3000);
+  }
 }
 
 
