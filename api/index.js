@@ -1,11 +1,13 @@
 /**
- * Vercel Serverless Function Entry Point
- * Re-exports the Express app from api/server.js
+ * Voice Widget API Server
+ * Backend para manejar conexiones con ElevenLabs
+ * Replicado desde DEMO-UIC (Express) adaptado a UCV
  */
 
 const express = require('express');
 const cors = require('cors');
 const crypto = require('crypto');
+const fetchFn = (...args) => (global.fetch ? global.fetch(...args) : import('node-fetch').then(({ default: fetch }) => fetch(...args)));
 require('dotenv').config();
 
 const app = express();
@@ -20,7 +22,7 @@ const ELEVENLABS_API_KEY = process.env.ELEVENLABS_API_KEY;
 const ELEVENLABS_AGENT_ID = process.env.ELEVENLABS_AGENT_ID;
 const ELEVENLABS_WEBHOOK_SECRET = process.env.ELEVENLABS_WEBHOOK_SECRET;
 
-// Dominios permitidos para seguridad (UCV)
+// Dominios permitidos (UCV)
 const ALLOWED_DOMAINS = process.env.ALLOWED_EMBED_DOMAINS?.split(',') || [
   'localhost',
   '127.0.0.1',
@@ -34,145 +36,197 @@ const ALLOWED_DOMAINS = process.env.ALLOWED_EMBED_DOMAINS?.split(',') || [
 function validateOrigin(req, res, next) {
   const origin = req.headers.origin || req.headers.referer || '';
   const userAgent = req.headers['user-agent'] || '';
-  
-  const isAuthorized = ALLOWED_DOMAINS.some(domain => 
-    origin.includes(domain) || 
+
+  const isAuthorized = ALLOWED_DOMAINS.some(domain =>
+    origin.includes(domain) ||
     origin.includes('localhost') ||
     !origin // Permitir requests directos para compatibilidad
   );
-  
+
   if (!isAuthorized && origin) {
-    console.warn(`[SECURITY] Token request from unauthorized origin: ${origin}`);
-    console.warn(`[DEBUG] Allowed domains: ${ALLOWED_DOMAINS.join(', ')}`);
-    console.warn(`[DEBUG] Current origin: ${origin}`);
+    console.warn(`[UCV-SECURITY] Token request from unauthorized origin: ${origin}`);
+    console.warn(`[UCV-DEBUG] Allowed domains: ${ALLOWED_DOMAINS.join(', ')}`);
+    console.warn(`[UCV-DEBUG] Current origin: ${origin}`);
+    return res.status(403).json({
+      error: 'Acceso denegado desde este dominio',
+      configured: false,
+    });
   }
-  
+
   next();
 }
 
-app.use(validateOrigin);
+/**
+ * GET /api/elevenlabs/check-config
+ * Verifica si ElevenLabs está configurado
+ */
+app.get('/api/elevenlabs/check-config', (req, res) => {
+  const hasApiKey = !!ELEVENLABS_API_KEY;
+  const hasAgentId = !!ELEVENLABS_AGENT_ID;
+  const isConfigured = hasApiKey && hasAgentId;
 
-// Health check
-app.get('/health', (req, res) => {
-  res.json({ status: 'ok', timestamp: new Date().toISOString() });
-});
-
-// Check ElevenLabs configuration
-app.get('/elevenlabs/check-config', (req, res) => {
-  const configured = !!(ELEVENLABS_API_KEY && ELEVENLABS_AGENT_ID);
-  console.log(`[API] ElevenLabs configured: ${configured}`);
   res.json({
-    configured,
-    hasApiKey: !!ELEVENLABS_API_KEY,
-    hasAgentId: !!ELEVENLABS_AGENT_ID,
+    configured: isConfigured,
+    details: {
+      hasApiKey,
+      hasAgentId,
+      missing: [
+        ...(!hasApiKey ? ['ELEVENLABS_API_KEY'] : []),
+        ...(!hasAgentId ? ['ELEVENLABS_AGENT_ID'] : []),
+      ],
+    },
   });
 });
 
-// Get ElevenLabs token
-app.post('/elevenlabs/token', async (req, res) => {
+/**
+ * GET /api/elevenlabs/token
+ * Genera un token de conversación para ElevenLabs
+ */
+app.get('/api/elevenlabs/token', validateOrigin, async (req, res) => {
   try {
+    const clientIp = req.headers['x-forwarded-for']?.split(',')[0] ||
+                     req.headers['x-real-ip'] ||
+                     req.ip ||
+                     'unknown';
+
     if (!ELEVENLABS_API_KEY || !ELEVENLABS_AGENT_ID) {
-      return res.status(400).json({
+      return res.status(200).json({
+        error: 'ElevenLabs no está configurado. El asistente de voz estará disponible una vez completada la configuración.',
         configured: false,
-        tokenGenerated: false,
-        message: 'ElevenLabs not configured',
       });
     }
 
-    const response = await fetch('https://api.elevenlabs.io/convai/conversation/get_signed_url', {
-      method: 'POST',
-      headers: {
-        'xi-api-key': ELEVENLABS_API_KEY,
-        'Content-Type': 'application/json',
-      },
-      body: JSON.stringify({
-        agent_id: ELEVENLABS_AGENT_ID,
-      }),
-    });
+    try {
+      const tokenResponse = await fetchFn(
+        `https://api.elevenlabs.io/v1/convai/conversation/token?agent_id=${ELEVENLABS_AGENT_ID}`,
+        {
+          method: 'GET',
+          headers: {
+            'xi-api-key': ELEVENLABS_API_KEY,
+            'Content-Type': 'application/json',
+          },
+        }
+      );
 
-    if (!response.ok) {
-      const error = await response.text();
-      console.error(`[API] ElevenLabs error: ${response.status} - ${error}`);
-      return res.status(response.status).json({
+      if (!tokenResponse.ok) {
+        const errorText = await tokenResponse.text();
+        console.error('ElevenLabs token generation failed:', errorText);
+
+        return res.json({
+          agentId: ELEVENLABS_AGENT_ID,
+          configured: true,
+          tokenGenerated: false,
+          fallbackMode: true,
+          error: `Token generation failed: ${errorText}`,
+        });
+      }
+
+      const tokenData = await tokenResponse.json();
+
+      return res.json({
+        token: tokenData.token,
+        agentId: ELEVENLABS_AGENT_ID,
+        configured: true,
+        tokenGenerated: true,
+        clientIp,
+      });
+    } catch (tokenError) {
+      console.error('Token generation error:', tokenError);
+      return res.json({
+        agentId: ELEVENLABS_AGENT_ID,
         configured: true,
         tokenGenerated: false,
-        message: `ElevenLabs API error: ${response.status}`,
+        fallbackMode: true,
+        error: tokenError.message || 'Unknown error',
       });
     }
-
-    const data = await response.json();
-    console.log(`[API] Token generated successfully`);
-    res.json({
-      configured: true,
-      tokenGenerated: true,
-      token: data.signed_url,
-      expiresIn: 3600,
-    });
   } catch (error) {
-    console.error('[API] Token generation error:', error);
+    console.error('ElevenLabs token error:', error);
     res.status(500).json({
-      configured: true,
-      tokenGenerated: false,
-      message: 'Failed to generate token',
-      error: error.message,
+      error: 'Error interno del servidor',
+      configured: false,
     });
   }
 });
 
-// Chat endpoint
-app.post('/chat/send', async (req, res) => {
+/**
+ * POST /api/chat/send
+ * Fallback simple cuando ElevenLabs no está disponible
+ */
+app.post('/api/chat/send', validateOrigin, async (req, res) => {
   try {
-    const { message } = req.body;
-    if (!message) {
-      return res.status(400).json({ error: 'Message is required' });
+    const { message, sessionId, userId, source } = typeof req.body === 'string' ? JSON.parse(req.body || '{}') : (req.body || {});
+
+    if (!message || typeof message !== 'string') {
+      return res.status(400).json({ error: 'El campo "message" es obligatorio.' });
     }
 
-    console.log(`[API] Chat message received: ${message}`);
-    
-    // Simular respuesta de chat
-    res.json({
-      success: true,
-      message: 'Mensaje recibido. Por favor, usa el asistente de voz para una mejor experiencia.',
+    console.log('[UCV Chat Fallback] Received message:', message, 'from:', source);
+
+    const responseMessage = 'Gracias por tu mensaje. Un asesor te contactará pronto.';
+
+    await new Promise(resolve => setTimeout(resolve, 1000));
+
+    console.log('[UCV Chat Fallback] Sending response:', responseMessage);
+
+    return res.json({
+      response: responseMessage,
+      message: responseMessage,
+      sessionId: sessionId || `web-session-${Date.now()}`,
       timestamp: new Date().toISOString(),
     });
   } catch (error) {
-    console.error('[API] Chat error:', error);
-    res.status(500).json({ error: 'Chat processing failed' });
+    console.error('[UCV Chat Fallback] Error processing message:', error);
+    return res.status(500).json({
+      error: 'Error interno del servidor. Por favor, intenta nuevamente o contacta a un asesor.',
+      response: 'Gracias por tu mensaje. Un asesor te contactará pronto.',
+    });
   }
 });
 
-// Webhook para ElevenLabs
-app.post('/elevenlabs/webhook', (req, res) => {
+/**
+ * POST /api/elevenlabs/webhook
+ * Webhook para recibir eventos de ElevenLabs
+ */
+app.post('/api/elevenlabs/webhook', async (req, res) => {
   try {
-    const signature = req.headers['x-elevenlabs-signature'];
-    const body = req.body;
+    const body = typeof req.body === 'string' ? req.body : JSON.stringify(req.body);
+    const signature = req.headers['elevenlabs-signature'];
 
     if (ELEVENLABS_WEBHOOK_SECRET && signature) {
-      const hash = crypto
+      const expectedSignature = crypto
         .createHmac('sha256', ELEVENLABS_WEBHOOK_SECRET)
-        .update(JSON.stringify(body))
+        .update(body)
         .digest('hex');
 
-      if (hash !== signature) {
-        console.warn('[API] Invalid webhook signature');
+      if (signature !== expectedSignature) {
+        console.error('[UCV] Invalid webhook signature');
         return res.status(401).json({ error: 'Invalid signature' });
       }
     }
 
-    console.log('[API] Webhook received:', body.event_type || 'unknown');
-    res.json({ success: true });
+    const event = typeof req.body === 'string' ? JSON.parse(body) : req.body;
+    console.log('[UCV] ElevenLabs webhook event:', event.type, event.data);
+
+    return res.json({ received: true });
   } catch (error) {
-    console.error('[API] Webhook error:', error);
-    res.status(500).json({ error: 'Webhook processing failed' });
+    console.error('[UCV] Webhook error:', error);
+    return res.status(500).json({ error: 'Webhook processing failed' });
   }
 });
 
-// 404 handler
-app.use((req, res) => {
-  res.status(404).json({ error: 'Not found' });
+/**
+ * GET /health
+ */
+app.get('/health', (req, res) => {
+  res.json({
+    status: 'ok',
+    timestamp: new Date().toISOString(),
+    elevenLabsConfigured: !!(ELEVENLABS_API_KEY && ELEVENLABS_AGENT_ID),
+  });
 });
 
-// Error handler
+// Manejo de errores global
 app.use((err, req, res, next) => {
   console.error('Server error:', err);
   res.status(500).json({ error: 'Internal server error' });
