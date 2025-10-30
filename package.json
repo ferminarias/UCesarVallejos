@@ -7,8 +7,11 @@
   "scripts": {
     "dev": "vite",
     "build": "vite build",
+    "build:vercel": "vite build && node scripts/copy-build.js",
     "preview": "vite preview",
-    "vercel-build": "vite build"
+    "vercel-dev": "vercel dev",
+    "deploy": "npm run build && vercel --prod",
+    "vercel-build": "npm run build"
   },
   "keywords": [
     "voice",
@@ -23,8 +26,9 @@
     "@elevenlabs/client": "^0.5.0"
   },
   "devDependencies": {
-    "vite": "^5.4.11",
-    "terser": "^5.31.0"
+    "terser": "^5.44.0",
+    "vercel": "^33.0.0",
+    "vite": "^5.4.0"
   },
   "engines": {
     "node": ">=18.0.0"

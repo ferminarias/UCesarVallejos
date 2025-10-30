@@ -1,0 +1,9 @@
+{
+  "name": "ucv-voice-widget-api",
+  "version": "1.0.0",
+  "description": "API functions for UCV Voice Widget",
+  "main": "server.js",
+  "engines": {
+    "node": ">=18.0.0"
+  }
+}
