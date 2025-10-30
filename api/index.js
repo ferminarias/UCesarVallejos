@@ -35,7 +35,6 @@ const ALLOWED_DOMAINS = process.env.ALLOWED_EMBED_DOMAINS?.split(',') || [
 // Validar origen de las peticiones
 function validateOrigin(req, res, next) {
   const origin = req.headers.origin || req.headers.referer || '';
-  const userAgent = req.headers['user-agent'] || '';
 
   const isAuthorized = ALLOWED_DOMAINS.some(domain =>
     origin.includes(domain) ||
