@@ -59,7 +59,7 @@ function validateOrigin(req, res, next) {
  * GET /api/elevenlabs/check-config
  * Verifica si ElevenLabs está configurado
  */
-app.get('/api/elevenlabs/check-config', (req, res) => {
+app.get('/elevenlabs/check-config', (req, res) => {
   const hasApiKey = !!ELEVENLABS_API_KEY;
   const hasAgentId = !!ELEVENLABS_AGENT_ID;
   const isConfigured = hasApiKey && hasAgentId;
@@ -81,7 +81,7 @@ app.get('/api/elevenlabs/check-config', (req, res) => {
  * GET /api/elevenlabs/token
  * Genera un token de conversación para ElevenLabs
  */
-app.get('/api/elevenlabs/token', validateOrigin, async (req, res) => {
+app.get('/elevenlabs/token', validateOrigin, async (req, res) => {
   try {
     const clientIp = req.headers['x-forwarded-for']?.split(',')[0] ||
                      req.headers['x-real-ip'] ||
@@ -152,7 +152,7 @@ app.get('/api/elevenlabs/token', validateOrigin, async (req, res) => {
  * POST /api/chat/send
  * Fallback simple cuando ElevenLabs no está disponible
  */
-app.post('/api/chat/send', validateOrigin, async (req, res) => {
+app.post('/chat/send', validateOrigin, async (req, res) => {
   try {
     const { message, sessionId, userId, source } = typeof req.body === 'string' ? JSON.parse(req.body || '{}') : (req.body || {});
 
@@ -187,7 +187,7 @@ app.post('/api/chat/send', validateOrigin, async (req, res) => {
  * POST /api/elevenlabs/webhook
  * Webhook para recibir eventos de ElevenLabs
  */
-app.post('/api/elevenlabs/webhook', async (req, res) => {
+app.post('/elevenlabs/webhook', async (req, res) => {
   try {
     const body = typeof req.body === 'string' ? req.body : JSON.stringify(req.body);
     const signature = req.headers['elevenlabs-signature'];
