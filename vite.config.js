@@ -35,7 +35,7 @@ export default defineConfig({
   },
   
   // Configuración base para assets
-  base: './',
+  base: '/',
   
   // Configuración de alias para imports más limpios
   resolve: {
