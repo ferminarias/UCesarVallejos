@@ -1,40 +1,25 @@
 /**
- * Voice Widget Styles - Universidad César Vallejo
- * Colores corporativos: Rojo #e30512 y Azul #243659
+ * Voice Widget Styles
+ * Replica del widget original de Ulinea con la paleta corporativa de UCV.
+ * Mantiene proporciones y animaciones similares al proyecto de referencia.
  */
 
 :root {
-  /* COLORES CORPORATIVOS UCV */
   --voice-widget-primary: #e30512;
   --voice-widget-primary-strong: #b30410;
-  --voice-widget-primary-soft: #ffe6e8;
-  --voice-widget-secondary: #c1040f;
-  --voice-widget-accent: #ff1a27;
-  
-  /* AZUL CORPORATIVO UCV */
-  --voice-widget-dark: #243659;
-  --voice-widget-dark-soft: #e8ebf0;
-  
-  /* SUPERFICIES */
+  --voice-widget-primary-soft: #fce8e9;
+  --voice-widget-secondary: #243659;
+  --voice-widget-accent: #e30512;
   --voice-widget-surface: #ffffff;
   --voice-widget-surface-alt: #f8f9fa;
-  
-  /* BORDES */
-  --voice-widget-border: #dee2e6;
-  --voice-widget-border-strong: #adb5bd;
-  
-  /* TEXTOS */
-  --voice-widget-text: #212529;
-  --voice-widget-text-muted: #6c757d;
-  
-  /* ESTADOS */
+  --voice-widget-border: #dcdfe3;
+  --voice-widget-border-strong: #b8bdc5;
+  --voice-widget-text: #1f2937;
+  --voice-widget-text-muted: #4b5563;
   --voice-widget-error: #dc2626;
   --voice-widget-warning: #f59e0b;
-  --voice-widget-success: #10b981;
-  
-  /* SOMBRAS */
-  --voice-widget-toast-shadow: 0 12px 32px rgba(227, 5, 18, 0.16);
-  --voice-widget-panel-shadow: -8px 0 24px rgba(36, 54, 89, 0.18);
+  --voice-widget-toast-shadow: 0 12px 32px rgba(15, 23, 42, 0.16);
+  --voice-widget-panel-shadow: -8px 0 24px rgba(15, 23, 42, 0.18);
 }
 
 .voice-widget-hidden {
@@ -60,7 +45,7 @@
   display: flex;
   align-items: center;
   justify-content: center;
-  box-shadow: 0 20px 32px rgba(227, 5, 18, 0.28);
+  box-shadow: 0 20px 32px rgba(6, 68, 40, 0.28);
   cursor: pointer;
   transition: transform 0.25s ease, box-shadow 0.25s ease, background 0.25s ease;
 }
@@ -68,7 +53,7 @@
 .voice-widget-fab:hover {
   transform: translateY(-2px);
   background: var(--voice-widget-secondary);
-  box-shadow: 0 26px 40px rgba(227, 5, 18, 0.35);
+  box-shadow: 0 26px 40px rgba(6, 68, 40, 0.35);
 }
 
 .voice-widget-fab:active {
@@ -115,7 +100,7 @@
 
 /* Header ------------------------------------------------------------------ */
 .voice-widget-header {
-  background: linear-gradient(135deg, var(--voice-widget-dark), var(--voice-widget-primary));
+  background: linear-gradient(135deg, var(--voice-widget-primary-strong), var(--voice-widget-primary));
   color: var(--voice-widget-surface);
   padding: 1.1rem 1.25rem;
   flex-shrink: 0;
@@ -299,7 +284,7 @@
 .voice-widget-input:focus {
   outline: none;
   border-color: var(--voice-widget-primary);
-  box-shadow: 0 0 0 3px rgba(227, 5, 18, 0.15);
+  box-shadow: 0 0 0 3px rgba(54, 148, 95, 0.15);
 }
 
 .voice-widget-send-btn {
@@ -344,7 +329,7 @@
   background: var(--voice-widget-surface);
   border-radius: 14px;
   border: 1px solid var(--voice-widget-border);
-  box-shadow: 0 14px 28px rgba(227, 5, 18, 0.12);
+  box-shadow: 0 14px 28px rgba(11, 56, 34, 0.12);
 }
 
 .voice-widget-controls-content {
@@ -411,11 +396,11 @@
 .voice-widget-control-btn:hover {
   transform: translateY(-1px);
   border-color: var(--voice-widget-border-strong);
-  box-shadow: 0 12px 22px rgba(227, 5, 18, 0.1);
+  box-shadow: 0 12px 22px rgba(12, 68, 40, 0.1);
 }
 
 .voice-widget-mic-btn {
-  border-color: rgba(227, 5, 18, 0.35);
+  border-color: rgba(54, 148, 95, 0.35);
   color: var(--voice-widget-primary);
   background: rgba(255, 255, 255, 0.95);
 }
@@ -438,7 +423,7 @@
 .voice-widget-call-btn {
   background: var(--voice-widget-primary);
   color: var(--voice-widget-surface);
-  box-shadow: 0 16px 28px rgba(227, 5, 18, 0.22);
+  box-shadow: 0 16px 28px rgba(6, 68, 40, 0.22);
   border: none;
   padding: 0.55rem 1.1rem;
 }
@@ -461,8 +446,8 @@
 .voice-widget-no-config {
   margin-top: 0.8rem;
   padding: 0.85rem;
-  background: rgba(227, 5, 18, 0.08);
-  border: 1px solid rgba(227, 5, 18, 0.2);
+  background: rgba(54, 148, 95, 0.08);
+  border: 1px solid rgba(54, 148, 95, 0.2);
   border-radius: 12px;
   font-size: 0.8rem;
   color: var(--voice-widget-secondary);

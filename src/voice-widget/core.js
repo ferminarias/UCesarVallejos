@@ -74,7 +74,7 @@ export class VoiceWidgetCore {
       }
     } catch {
       this.updateVoiceStatus('error');
-      this.addMessage('Lo siento, no pude establecer la conexión de voz. Por favor, intenta usar WhatsApp o el chat de texto.', 'assistant');
+      this.addMessage('Lo siento, no pude establecer la conexion de voz. Por favor, intenta usar WhatsApp o el formulario de contacto.', 'assistant');
     }
   }
 
@@ -101,7 +101,7 @@ export class VoiceWidgetCore {
       
       // Actualizar estado
       this.updateVoiceStatus('idle');
-      this.addMessage('Llamada finalizada. ¡Gracias por contactar a Universidad César Vallejo!', 'assistant');
+      this.addMessage('Llamada finalizada. ¡Gracias por usar el asistente de voz!', 'assistant');
       
       console.log('[VoiceWidget Core] Voice call stopped successfully');
     } catch (error) {
@@ -118,7 +118,7 @@ export class VoiceWidgetCore {
       return stream;
     } catch {
       this.updateVoiceStatus('error');
-      this.addMessage('Necesito acceso al micrófono para poder conversar contigo. Por favor, permite el acceso y vuelve a intentar.', 'assistant');
+      this.addMessage('Necesito acceso al microfono para poder conversar contigo. Por favor, permite el acceso y vuelve a intentar.', 'assistant');
       return null;
     }
   }
@@ -153,7 +153,7 @@ export class VoiceWidgetCore {
         this.safeEndSession();
         if (this.refs.mediaStream) { this.refs.mediaStream.getTracks().forEach((track) => track.stop()); this.refs.mediaStream = null; }
         this.updateVoiceStatus('error');
-        this.addMessage('Error de conexión. La llamada se terminó. Puedes volver a intentar o usar WhatsApp para contactarnos.', 'assistant');
+        this.addMessage('Error de conexión. La llamada se terminó. Puedes volver a intentar o usar WhatsApp.', 'assistant');
       },
     });
     this.refs.session = { conversation, websocket: null, agentId: tokenData.agentId, token: tokenData.token, reconnectAttempts: 0, maxReconnectAttempts: 0, reconnectTimeout: null, isConnected: false, isInitialized: true };
@@ -187,7 +187,7 @@ export class VoiceWidgetCore {
   simulateVoiceConversation() {
     this.clearSimulationTimers();
     this.updateVoiceStatus('connected');
-    this.addMessage('¡Hola! Soy tu asistente de UCV. Aunque el servicio de voz no está disponible en este momento, puedes escribirme tus preguntas y te ayudaré con información sobre nuestros programas.', 'assistant');
+    this.addMessage('¡Hola! Soy tu asistente de UIC. Aunque el servicio de voz no está disponible en este momento, puedes escribirme tus preguntas y te ayudaré con información sobre nuestros programas.', 'assistant');
     this.refs.session = { conversation: { sendUserMessage: (text) => { setTimeout(() => { this.addMessage('Gracias por tu mensaje. Un asesor te contactará pronto para brindarte información detallada sobre nuestros programas.', 'assistant'); }, 1000); }, sendUserActivity: () => {} }, websocket: null, agentId: 'simulated', token: 'simulated', reconnectAttempts: 0, maxReconnectAttempts: 0, reconnectTimeout: null, isConnected: true, isInitialized: true };
     this.refs.sessionActive = true;
   }

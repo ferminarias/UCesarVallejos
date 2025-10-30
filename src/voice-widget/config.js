@@ -1,5 +1,5 @@
 /**
- * Voice Widget Configuration - Universidad César Vallejo
+ * Voice Widget Configuration (Vite)
  */
 
 export const VoiceWidgetConfig = {

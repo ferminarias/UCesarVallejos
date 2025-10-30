@@ -84,7 +84,7 @@ export class VoiceWidgetUI {
           </div>
 
           <div id="voice-widget-no-config-msg" class="voice-widget-no-config voice-widget-hidden">
-El asistente de voz estará disponible en breve. Mientras tanto puedes usar el chat de texto o WhatsApp.
+            El asistente de voz estara disponible en breve. Mientras tanto puedes usar el chat de texto, WhatsApp o el formulario de contacto.
           </div>
         </div>
 
