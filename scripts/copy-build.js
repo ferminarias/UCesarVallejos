@@ -3,14 +3,10 @@
  * Cross-platform compatible (Windows/Linux/Mac)
  */
 
-import { copyFileSync, mkdirSync, readdirSync, statSync } from 'fs';
-import { join, dirname } from 'path';
-import { fileURLToPath } from 'url';
+const { copyFileSync, mkdirSync, readdirSync, statSync } = require('fs');
+const { join, dirname } = require('path');
 
-const __filename = fileURLToPath(import.meta.url);
-const __dirname = dirname(__filename);
-const projectRoot = join(__dirname, '..');
-
+const projectRoot = __dirname.replace(/\/scripts$/, '');
 const srcDir = join(projectRoot, 'dist');
 const destDir = join(projectRoot, 'public');
 
@@ -37,10 +33,6 @@ function copyRecursive(src, dest) {
     copyFileSync(src, dest);
     console.log(`✅ Copied: ${src} → ${dest}`);
   }
-}
-
-function basename(path) {
-  return path.split('/').pop() || path.split('\\').pop();
 }
 
 try {
