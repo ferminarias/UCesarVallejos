@@ -10,7 +10,8 @@ export class VoiceWidgetUI {
   }
 
   render() {
-    const widgetHTML = `
+    // Render FAB container
+    const fabHTML = `
       <div id="voice-widget-container" class="voice-widget-container">
         <button id="voice-widget-fab" class="voice-widget-fab" aria-label="Abrir asistente de voz">
           <svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.25" stroke-linecap="round" stroke-linejoin="round">
@@ -19,88 +20,106 @@ export class VoiceWidgetUI {
             <path d="M3 19a2 2 0 0 0 2 2h1a2 2 0 0 0 2-2v-3a2 2 0 0 0-2-2H3z"/>
           </svg>
         </button>
+      </div>
+    `;
 
-        <div id="voice-widget-panel" class="voice-widget-panel voice-widget-hidden">
-          <div class="voice-widget-header">
-            <div class="voice-widget-header-content">
-              <button id="voice-widget-close" class="voice-widget-close-btn" aria-label="Cerrar">&times;</button>
-              <div class="voice-widget-header-left">
-                <div class="voice-widget-header-text">
-                  <h3>Asistente UCV</h3>
-                  <p>Elige cómo quieres comunicarte</p>
-                </div>
-                <div class="voice-widget-status">
-                  <div class="voice-widget-status-dot"></div>
-                  <span class="voice-widget-status-text">Listo para conversar</span>
-                </div>
+    // Render panel separately (outside container for proper fixed positioning)
+    const panelHTML = `
+      <div id="voice-widget-panel" class="voice-widget-panel voice-widget-hidden">
+        <div class="voice-widget-header">
+          <div class="voice-widget-header-content">
+            <button id="voice-widget-close" class="voice-widget-close-btn" aria-label="Cerrar">&times;</button>
+            <div class="voice-widget-header-left">
+              <div class="voice-widget-header-text">
+                <h3>Asistente UCV</h3>
+                <p>Elige cómo quieres comunicarte</p>
+              </div>
+              <div class="voice-widget-status">
+                <div class="voice-widget-status-dot"></div>
+                <span class="voice-widget-status-text">Listo para conversar</span>
               </div>
             </div>
           </div>
+        </div>
 
-          <div id="voice-widget-messages" class="voice-widget-messages"></div>
+        <div id="voice-widget-messages" class="voice-widget-messages"></div>
 
-          <div id="voice-widget-text-input" class="voice-widget-text-input voice-widget-hidden">
-            <div class="voice-widget-input-container">
-              <input type="text" id="voice-widget-input-field" placeholder="Escribe tu mensaje..." class="voice-widget-input" />
-              <button id="voice-widget-send-btn" class="voice-widget-send-btn" disabled>
-                <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                  <path d="M22 2L11 13M22 2l-7 20-4-9-9-4 20-7z"/>
-                </svg>
-              </button>
-            </div>
+        <div id="voice-widget-text-input" class="voice-widget-text-input voice-widget-hidden">
+          <div class="voice-widget-input-container">
+            <input type="text" id="voice-widget-input-field" placeholder="Escribe tu mensaje..." class="voice-widget-input" />
+            <button id="voice-widget-send-btn" class="voice-widget-send-btn" disabled>
+              <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <path d="M22 2L11 13M22 2l-7 20-4-9-9-4 20-7z"/>
+              </svg>
+            </button>
           </div>
+        </div>
 
-          <div class="voice-widget-controls">
-            <div class="voice-widget-controls-card">
-              <div class="voice-widget-controls-content">
-                <div class="voice-widget-controls-info">
-                  <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+        <div class="voice-widget-controls">
+          <div class="voice-widget-controls-card">
+            <div class="voice-widget-controls-content">
+              <div class="voice-widget-controls-info">
+                <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+                  <path d="M12 2a3 3 0 0 0-3 3v7a3 3 0 0 0 6 0V5a3 3 0 0 0-3-3Z"></path>
+                  <path d="M19 10v2a7 7 0 0 1-14 0v-2"></path>
+                  <line x1="12" x2="12" y1="19" y2="22"></line>
+                </svg>
+                <div>
+                  <p class="voice-widget-controls-title">Conversacion por voz</p>
+                  <p class="voice-widget-controls-subtitle">Habla directamente con el asistente IA</p>
+                </div>
+              </div>
+              <div class="voice-widget-controls-buttons">
+                <button id="voice-widget-mic-btn" class="voice-widget-control-btn voice-widget-mic-btn">
+                  <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
                     <path d="M12 2a3 3 0 0 0-3 3v7a3 3 0 0 0 6 0V5a3 3 0 0 0-3-3Z"></path>
                     <path d="M19 10v2a7 7 0 0 1-14 0v-2"></path>
                     <line x1="12" x2="12" y1="19" y2="22"></line>
                   </svg>
-                  <div>
-                    <p class="voice-widget-controls-title">Conversacion por voz</p>
-                    <p class="voice-widget-controls-subtitle">Habla directamente con el asistente IA</p>
-                  </div>
-                </div>
-                <div class="voice-widget-controls-buttons">
-                  <button id="voice-widget-mic-btn" class="voice-widget-control-btn voice-widget-mic-btn">
-                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
-                      <path d="M12 2a3 3 0 0 0-3 3v7a3 3 0 0 0 6 0V5a3 3 0 0 0-3-3Z"></path>
-                      <path d="M19 10v2a7 7 0 0 1-14 0v-2"></path>
-                      <line x1="12" x2="12" y1="19" y2="22"></line>
-                    </svg>
-                  </button>
-                  <button id="voice-widget-call-btn" class="voice-widget-call-btn">
-                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
-                      <path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72 12.84 12.84 0 0 0 .7 2.81 2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45 12.84 12.84 0 0 0 2.81.7A2 2 0 0 1 22 16.92z"></path>
-                    </svg>
-                    <span>Iniciar llamada</span>
-                  </button>
-                </div>
+                </button>
+                <button id="voice-widget-call-btn" class="voice-widget-call-btn">
+                  <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+                    <path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72 12.84 12.84 0 0 0 .7 2.81 2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45 12.84 12.84 0 0 0 2.81.7A2 2 0 0 1 22 16.92z"></path>
+                  </svg>
+                  <span>Iniciar llamada</span>
+                </button>
               </div>
             </div>
           </div>
-
-          <div id="voice-widget-no-config-msg" class="voice-widget-no-config voice-widget-hidden">
-            El asistente de voz estara disponible en breve. Mientras tanto puedes usar el chat de texto, WhatsApp o el formulario de contacto.
-          </div>
         </div>
 
-        <div id="voice-widget-toast" class="voice-widget-toast voice-widget-hidden">
-          <div class="voice-widget-toast-content">
-            <strong id="voice-widget-toast-title"></strong>
-            <p id="voice-widget-toast-message"></p>
-          </div>
+        <div id="voice-widget-no-config-msg" class="voice-widget-no-config voice-widget-hidden">
+          El asistente de voz estara disponible en breve. Mientras tanto puedes usar el chat de texto, WhatsApp o el formulario de contacto.
         </div>
       </div>
     `;
 
+    // Toast HTML
+    const toastHTML = `
+      <div id="voice-widget-toast" class="voice-widget-toast voice-widget-hidden">
+        <div class="voice-widget-toast-content">
+          <strong id="voice-widget-toast-title"></strong>
+          <p id="voice-widget-toast-message"></p>
+        </div>
+      </div>
+    `;
+
+    // Render FAB in container
     const container = document.getElementById(this.containerId) || document.body;
-    const wrapper = document.createElement('div');
-    wrapper.innerHTML = widgetHTML;
-    container.appendChild(wrapper.firstElementChild);
+    const fabWrapper = document.createElement('div');
+    fabWrapper.innerHTML = fabHTML;
+    container.appendChild(fabWrapper.firstElementChild);
+
+    // Render panel directly to body (for proper fixed positioning)
+    const panelWrapper = document.createElement('div');
+    panelWrapper.innerHTML = panelHTML;
+    document.body.appendChild(panelWrapper.firstElementChild);
+
+    // Render toast directly to body
+    const toastWrapper = document.createElement('div');
+    toastWrapper.innerHTML = toastHTML;
+    document.body.appendChild(toastWrapper.firstElementChild);
+
     this.cacheElements();
   }
 
