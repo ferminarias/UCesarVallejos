@@ -6,52 +6,24 @@
   <title>Universidad César Vallejo - Voice Widget Demo</title>
 
   <link rel="stylesheet" href="/assets/css/voice-widget.css">
+  <style>
+    html, body {
+      height: 100%;
+      margin: 0;
+    }
+    .ucv-frame {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100vw;
+      height: 100vh;
+      border: 0;
+    }
+  </style>
 </head>
 <body>
-  <div id="app">
-    <!-- Contenido de demostración -->
-    <div class="main-wrapper">
-      <div class="container">
-        <div class="logo">
-          <div class="logo-icon">🎓</div>
-          <h1>Universidad César Vallejo</h1>
-          <p class="subtitle">Voice Widget Integrado</p>
-        </div>
-
-        <p>
-          Bienvenido a la demo del asistente virtual de UCV. Utiliza el widget flotante en la esquina inferior derecha para iniciar una conversación por voz o texto.
-        </p>
-
-        <div class="features">
-          <div class="feature">
-            <div class="feature-icon">🎤</div>
-            <h3>Conversación por Voz</h3>
-            <p>Habla directamente con nuestro asistente usando tu micrófono.</p>
-          </div>
-          <div class="feature">
-            <div class="feature-icon">💬</div>
-            <h3>Chat de Texto</h3>
-            <p>Escribe tus consultas y recibe respuestas instantáneas.</p>
-          </div>
-          <div class="feature">
-            <div class="feature-icon">🌐</div>
-            <h3>Disponible 24/7</h3>
-            <p>Obtén información sobre nuestros programas en cualquier momento.</p>
-          </div>
-          <div class="feature">
-            <div class="feature-icon">📱</div>
-            <h3>Responsive</h3>
-            <p>Funciona perfectamente en móviles, tablets y computadoras.</p>
-          </div>
-        </div>
-
-        <div class="cta">
-          <h2>¿Listo para comenzar?</h2>
-          <p>Haz clic en el botón rojo flotante para abrir el asistente virtual.</p>
-        </div>
-      </div>
-    </div>
-  </div>
+  <!-- Render principal: página guardada de UCV en un iframe de pantalla completa -->
+  <iframe class="ucv-frame" src="/ucv.html" title="Universidad César Vallejo"></iframe>
 
   <!-- Punto de montaje del widget -->
   <div id="voice-widget-root"></div>
