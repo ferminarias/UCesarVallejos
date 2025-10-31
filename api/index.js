@@ -4,12 +4,18 @@
  * Replicado desde DEMO-UIC (Express) adaptado a UCV
  */
 
-const express = require('express');
-const cors = require('cors');
-const crypto = require('crypto');
-const fetchFn = (...args) => (global.fetch ? global.fetch(...args) : import('node-fetch').then(({ default: fetch }) => fetch(...args)));
-require('dotenv').config();
+// Sustituir las líneas actuales en @api/index.js#7-18
+import express from 'express';
+import cors from 'cors';
+import crypto from 'crypto';
+import dotenv from 'dotenv';
 
+const fetchFn = (...args) =>
+  (globalThis.fetch
+    ? globalThis.fetch(...args)
+    : import('node-fetch').then(({ default: fetch }) => fetch(...args)));
+
+dotenv.config();
 const app = express();
 
 // Middleware
@@ -231,4 +237,5 @@ app.use((err, req, res, next) => {
   res.status(500).json({ error: 'Internal server error' });
 });
 
-module.exports = app;
+// Sustituir la última línea en @api/index.js#228-234
+export default app;
