@@ -30,6 +30,44 @@
 
   <!-- Entrada del widget procesado por Vite -->
   <script type="module" src="/src/voice-widget/main.js"></script>
+  <script>
+    // Quitar botón de chat de terceros dentro del iframe UCV (mismo origen)
+    (function removeThirdPartyChat() {
+      const iframe = document.querySelector('.ucv-frame');
+      if (!iframe) return;
+      function tryRemove() {
+        try {
+          const doc = iframe.contentWindow && iframe.contentWindow.document;
+          if (!doc) return;
+          const selectors = [
+            '.mxg-launcher-btn',
+            '.genesys-mxg-frame',
+            '#genesys-mxg-frame',
+            '#genesys-mxg-container-frame',
+            '.genesys-app',
+            '.cx-messenger-1qfeen',
+          ];
+          selectors.forEach(sel => {
+            doc.querySelectorAll(sel).forEach(el => el.remove());
+          });
+          // También ocultar por si se reinyecta dinámicamente
+          const style = doc.createElement('style');
+          style.textContent = `
+            .mxg-launcher-btn, .genesys-mxg-frame, #genesys-mxg-frame, #genesys-mxg-container-frame, .genesys-app { display: none !important; visibility: hidden !important; opacity: 0 !important; }
+          `;
+          doc.head.appendChild(style);
+        } catch (e) { /* noop */ }
+      }
+      iframe.addEventListener('load', () => {
+        let attempts = 0;
+        const interval = setInterval(() => {
+          attempts += 1;
+          tryRemove();
+          if (attempts > 20) clearInterval(interval);
+        }, 500);
+      });
+    })();
+  </script>
 </body>
 </html>
 
